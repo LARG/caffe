@@ -128,14 +128,18 @@ void DevicePair::compute(const vector<int> devices, vector<DevicePair>* pairs) {
         cudaDeviceProp a, b;
         CUDA_CHECK(cudaGetDeviceProperties(&a, remaining[i]));
         CUDA_CHECK(cudaGetDeviceProperties(&b, remaining[j]));
+#if CUDA_VERSION >= 6000
         if (a.isMultiGpuBoard && b.isMultiGpuBoard) {
           if (a.multiGpuBoardGroupID == b.multiGpuBoardGroupID) {
+#endif
             pairs->push_back(DevicePair(remaining[i], remaining[j]));
             DLOG(INFO) << "GPU board: " << remaining[i] << ":" << remaining[j];
             remaining.erase(remaining.begin() + j);
             break;
+#if CUDA_VERSION >= 6000
           }
         }
+#endif
       }
     }
   }
